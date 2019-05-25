@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Title</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" th:inline="javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+
+        function drawChart() {
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Date');
+            data.addColumn('number', 'Rate');
+            var rok = [[${dates[0]}]];
+            var srednia = [[${avg}]];
+
+            for(var i = 0; i < srednia.length; i++){
+                data.addRow([rok, srednia[i]]);
+            }
+
+            var options = {
+                title: 'Historical exchange rate ' + [[${fromCurrency}]] +  '-' + [[${toCurrency}]],
+                legend: 'none',
+               // hAxis: {title: [[${fromCurrency}]] + '-' + [[${toCurrency}]] ,  titleTextStyle: {color: '#333'}},
+                vAxis: {minValue: 0}
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+<body>
+<div class="display-2">
+    <div class="text-center">
+        Select exchange currencies
+    </div>
+</div>
+<br/>
+
+
+<div class="container">
+    <form th:action="@{/index.html}" th:object="${code}" method='post'>
+        <div class="row justify-content-center">
+            <div class="col-1 h4">
+                From
+            </div>
+            <div class="col-2 ">
+                <select th:field="*{id}" class="btn btn-info dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <option th:each="code : ${currencies}"
+                            th:value="${code.id}"
+                            th:utext="${code.code}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-1 h4">
+                to
+            </div>
+            <div class="col-2">
+
+                <select th:field="*{toCode}" class="btn btn-info dropdown-toggle dropdown-toggle-split"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <option  th:each="code : ${currencies}"
+                             th:value="${code.code}"
+                             th:utext="${code.code}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-2" >
+                <input class="btn btn-outline-info" name="submit" type="submit" value="Exchange" />
+            </div>
+            <div class="col-4">
+                <table>
+                    <tr>
+                        <td class="text-muted">
+                            Real-time exchange rate
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="h4" th:text="${session.exchangeRate}" th:unless="${session == null}">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class = "h6" th:text="${session.fromCurrency}" th:unless="${session == null}">
+                        </td>
+                        <td class = "h6" th:text="${session.toCurrency}" th:unless="${session == null}">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>
+
+
+
+</div>
+
+
+
+<div id="chart_div" style="width: 100%; height: 500px;"></div>
+
+<!--<div class="container">-->
+    <!--<div class="row justify-content-center">-->
+        <!--<div class="col-2 ">-->
+            <!--<button onclick="drawChart()" class="btn btn-outline-info" name="submit" type="submit" value="Exchange">-->
+                <!--Daily-->
+            <!--</button>-->
+
+        <!--</div>-->
+        <!--<div class="col-2">-->
+            <!--<button onclick="yearDataYear()" class="btn btn-outline-info" name="submit" type="submit" value="Exchange">-->
+                <!--Weekly-->
+            <!--</button>-->
+        <!--</div>-->
+        <!--<div class="col-2" >-->
+            <!--<button onclick="yearDataYear()" class="btn btn-outline-info" name="submit" type="submit" value="Exchange">-->
+                <!--Monthly-->
+            <!--</button>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+
+
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+
+</body>
+</html>
